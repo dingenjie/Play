@@ -115,7 +115,7 @@
     <div class="mask" id="mask">
         <div class="modal">
             <h3 id="modalTitle"></h3>
-            <img id="modalImg" alt="图片">
+            <img id="modalImg" alt="图片" loading="lazy" style="opacity:0;transition:opacity 0.5s" onload="this.style.opacity=1">
             <button class="close-btn" id="closeModal">关闭弹窗</button>
         </div>
     </div>
