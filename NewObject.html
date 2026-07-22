@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>获取对象</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* 消除手机点击高亮 */
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: "Microsoft Yahei", sans-serif;
+            background-image: url("https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf10.jpg");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            /* 微信安卓浏览器去掉fixed，避免背景失效 */
+            min-height: 100vh;
+        }
+        /* 弹窗打开时给body添加此类，禁止滚动 */
+        body.lock {
+            overflow: hidden;
+        }
+        .box {
+            background: rgba(255,255,255,0.7);
+            padding: 30px 20px;
+            width: 92%;
+            max-width: 500px;
+            margin: 60px auto;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-bottom: 12px;
+            font-size: 22px;
+        }
+        input {
+            width: 100%;
+            padding: 12px 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+        }
+        input:focus{
+            border-color:#409eff;
+        }
+        button {
+            padding: 12px 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            background: #409eff;
+            color: #fff;
+            font-size: 15px;
+        }
+        button:active {
+            background: #337ecc;
+        }
+        #text{
+            margin-top:15px;
+            font-size:17px;
+        }
+
+        /* 弹窗样式 移动端适配 */
+        .mask{
+            display: none;
+            position: fixed;
+            left:0;
+            top:0;
+            width:100%;
+            height:100%;
+            background: rgba(0,0,0,0.6);
+            z-index:999;
+        }
+        .modal{
+            width: 90%;
+            max-width: 420px;
+            background:#fff;
+            border-radius:10px;
+            padding:20px;
+            position:absolute;
+            left:50%;
+            top:50%;
+            transform: translate(-50%,-50%);
+            text-align:center;
+        }
+        .modal img{
+            width:100%;
+            border-radius:6px;
+            margin:10px 0;
+        }
+        .close-btn{
+            margin-top:10px;
+            background:#999;
+        }
+        .close-btn:active{
+            background:#666;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>获取一个对象</h1>
+        <input type="text" id="nameInput" placeholder="请输入名称">
+        <button id="btn">获取对象</button>
+        <p id="text">等待获取对象……</p>
+    </div>
+
+    <div class="mask" id="mask">
+        <div class="modal">
+            <h3 id="modalTitle"></h3>
+            <img id="modalImg" alt="图片">
+            <button class="close-btn" id="closeModal">关闭弹窗</button>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('btn');
+        const text = document.getElementById('text');
+        const nameInput = document.getElementById('nameInput');
+        const mask = document.getElementById('mask');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalImg = document.getElementById('modalImg');
+        const closeModal = document.getElementById('closeModal');
+        const body = document.body;
+
+        // ========== 在这里添加你的弹窗图片列表，自行增删链接 ==========
+        const imgList = [
+            "https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf8.jpg",
+            "https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf9.jpg",
+            "https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf11.jpg",
+            "https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf12.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf13.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf14.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf15.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf16.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf17.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf18.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf19.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf20.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf21.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf22.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf23.jpg",
+			"https://cdn.jsdelivr.net/gh/dingenjie/Play@main/PictureS/lyf24.jpg",
+        ];
+
+        // 构造函数
+        function Person(name){
+            this.name = name;
+        }
+
+        // 封装创建对象逻辑
+        function createPerson(){
+            let userName = nameInput.value.trim();
+            if(!userName){
+                text.innerText = "请先输入名称！";
+                return;
+            }
+            let p = new Person(userName);
+            console.log("创建的Person实例：", p);
+            text.innerText = `恭喜${p.name}，成功获取对象`;
+
+            modalTitle.innerText = `恭喜${p.name}，成功获取对象`;
+
+            // ====== 随机选取一张图片 ======
+            const randomIndex = Math.floor(Math.random() * imgList.length);
+            modalImg.src = imgList[randomIndex];
+
+            mask.style.display = 'block';
+            body.classList.add('lock');
+        }
+
+        // 关闭弹窗 + 重置页面初始状态
+        function resetPage(){
+            mask.style.display = 'none';
+            body.classList.remove('lock');
+            text.innerText = "等待获取对象……";
+            nameInput.value = "";
+        }
+        closeModal.addEventListener('click', resetPage);
+
+        // 点击灰色遮罩关闭弹窗
+        mask.addEventListener('click', function(e){
+            if(e.target === mask){
+                resetPage();
+            }
+        })
+
+        // 点击按钮触发
+        btn.addEventListener('click', createPerson);
+        // 回车触发（电脑端）
+        nameInput.addEventListener('keydown', function(e){
+            if(e.key === 'Enter'){
+                createPerson();
+            }
+        })
+    </script>
+</body>
+</html>
